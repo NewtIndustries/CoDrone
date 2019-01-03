@@ -8,6 +8,7 @@ import time
 import sys
 from CoDrone import Mode, Color, Direction
 from sched import scheduler
+from src.Util.Bluetooth import Bluetooth
 
 # class ENUM_STATE(Enum):
 #     READY="READY"
@@ -24,6 +25,7 @@ STATE_ERROR = "ERROR"
 
 closing = False
 
+
 class CoDroneControl(tk.Frame):
     def __init__(self, parent, drone):
         tk.Frame.__init__(self, parent)
@@ -37,8 +39,10 @@ class CoDroneControl(tk.Frame):
         self.initialize_user_interface()
         self.updater = sched.scheduler(time.time, time.sleep)
         self.updater.enter(2, 1, self.updateLoop)
+        self.bluetooth = Bluetooth()
+        self.bluetooth.listAvailable()
         threading.Timer(1, self.updater.run).start()
-                
+
     def updateLoop(self):
         if not(closing):
             self.updateDroneStatus()
@@ -48,43 +52,55 @@ class CoDroneControl(tk.Frame):
         self.parent.geometry("640x1080")
         self.parent.title("CoDrone Command Module")
 
-        self.buttonOpen = tk.Button(self.parent, text="Open", command=self.open)
+        self.buttonOpen = tk.Button(
+            self.parent, text="Open", command=self.open)
         self.buttonOpen.pack()
 
-        self.buttonConnect = tk.Button(self.parent, text="Connect", command=self.connect)
+        self.buttonConnect = tk.Button(
+            self.parent, text="Connect", command=self.connect)
         self.buttonConnect.pack()
 
-        self.buttonPair = tk.Button(self.parent, text="Pair", command=self.pairNearest)
+        self.buttonPair = tk.Button(
+            self.parent, text="Pair", command=self.pairNearest)
         self.buttonPair.pack()
 
-        self.buttonRecalibrate = tk.Button(self.parent, text="Recalibrate", command=self.recalibrate)
+        self.buttonRecalibrate = tk.Button(
+            self.parent, text="Recalibrate", command=self.recalibrate)
         self.buttonRecalibrate.pack()
 
-        self.buttonTakeoff = tk.Button(self.parent, text="Take Off", command=self.takeOff)
+        self.buttonTakeoff = tk.Button(
+            self.parent, text="Take Off", command=self.takeOff)
         self.buttonTakeoff.pack()
 
-        self.buttonLand = tk.Button(self.parent, text="Land", command=self.land)
+        self.buttonLand = tk.Button(
+            self.parent, text="Land", command=self.land)
         self.buttonLand.pack()
 
-        self.buttonMoveUp = tk.Button(self.parent, text="Move Up", command= lambda:(self.changeAltitude(10)))
+        self.buttonMoveUp = tk.Button(
+            self.parent, text="Move Up", command=lambda: (self.changeAltitude(10)))
         self.buttonMoveUp.pack()
 
-        self.buttonMoveDown = tk.Button(self.parent, text="Move Down", command= lambda:(self.changeAltitude(-10)))
+        self.buttonMoveDown = tk.Button(
+            self.parent, text="Move Down", command=lambda: (self.changeAltitude(-10)))
         self.buttonMoveDown.pack()
 
-        self.buttonSpin = tk.Button(self.parent, text="SpinnyTown!", command=self.spin)
+        self.buttonSpin = tk.Button(
+            self.parent, text="SpinnyTown!", command=self.spin)
         self.buttonSpin.pack()
 
-        self.buttonSetPurple = tk.Button(self.parent, text="Purple Eyes", command=self.purplize)
+        self.buttonSetPurple = tk.Button(
+            self.parent, text="Purple Eyes", command=self.purplize)
         self.buttonSetPurple.pack()
 
-        self.buttonSetDefaultColor = tk.Button(self.parent, text="Reset Color", command=self.resetColor)
+        self.buttonSetDefaultColor = tk.Button(
+            self.parent, text="Reset Color", command=self.resetColor)
         self.buttonSetDefaultColor.pack()
 
         self.labelStatus = tk.Label(self.parent, textvariable=self.status)
         self.labelStatus.pack()
 
-        self.buttonExit = tk.Button(self.parent, text="QUIT", command=self.shutdown)
+        self.buttonExit = tk.Button(
+            self.parent, text="QUIT", command=self.shutdown)
         self.buttonExit.pack()
 
     def open(self):
@@ -163,17 +179,25 @@ class CoDroneControl(tk.Frame):
 
             if self.drone.isOpen() and (self.drone.get_state() == STATE_READY or self.drone.get_state() == STATE_FLIGHT):
                 # print("Open and Ready")
-                self.appendState("Battery Level", self.drone.get_battery_percentage())
-                self.appendState("Battery Voltage", self.drone.get_battery_voltage())
+                self.appendState(
+                    "Battery Level", self.drone.get_battery_percentage())
+                self.appendState("Battery Voltage",
+                                 self.drone.get_battery_voltage())
                 self.appendState("Pressure", self.drone.get_pressure())
                 self.appendState("Height", self.drone.get_height())
-                self.appendState("Temperature", self.drone.get_drone_temp() * 9 / 5 + 32)
-                self.appendState("Accelerometer", self.getAxisString(self.drone.get_accelerometer()))
-                self.appendState("Gyroscope", self.getAngleString(self.drone.get_gyro_angles()))
-                self.appendState("Angular Speed", self.getAngleString(self.drone.get_angular_speed()))
-                self.appendState("Flow Opt Position", self.getPositionString(self.drone.get_opt_flow_position()))
-                self.appendState("Trim", self.getFlightString(self.drone.get_trim()))
-            
+                self.appendState(
+                    "Temperature", self.drone.get_drone_temp() * 9 / 5 + 32)
+                self.appendState("Accelerometer", self.getAxisString(
+                    self.drone.get_accelerometer()))
+                self.appendState("Gyroscope", self.getAngleString(
+                    self.drone.get_gyro_angles()))
+                self.appendState("Angular Speed", self.getAngleString(
+                    self.drone.get_angular_speed()))
+                self.appendState("Flow Opt Position", self.getPositionString(
+                    self.drone.get_opt_flow_position()))
+                self.appendState(
+                    "Trim", self.getFlightString(self.drone.get_trim()))
+
         except Exception:
             print(traceback.format_exc())
 
@@ -181,7 +205,7 @@ class CoDroneControl(tk.Frame):
 
     def appendState(self, label, val):
         self.statusVal = self.statusVal + label + " - " + str(val) + os.linesep
-   
+
     def emergencyAbort(self):
         self.drone.land()
         self.drone.close()
@@ -211,11 +235,13 @@ class CoDroneControl(tk.Frame):
     def shutdown(self):
         root.destroy()
 
+
 if __name__ == '__main__':
     root = tk.Tk()
-    drone =  CoDrone.CoDrone()
+    drone = CoDrone.CoDrone()
     drone.disconnect()
     drone.close()
+
     def onClosing():
         closing = True
         try:
@@ -234,6 +260,6 @@ if __name__ == '__main__':
 
         root.destroy()
 
-    run = CoDroneControl(root, drone) 
+    run = CoDroneControl(root, drone)
     root.protocol("WM_DELETE_WINDOW", onClosing)
     root.mainloop()

@@ -1,0 +1,6 @@
+CoDrone
+OpenCV-Python
+rtsp
+pylint
+pybluez
+# pybluez\[ble\]
