@@ -11,6 +11,7 @@ from CoDrone import Mode, Color, Direction
 from sched import scheduler
 from src.Util.Bluetooth import Bluetooth
 from src.Util.Arduino import Arduino
+from src.Util.Camera import Camera
 
 # class ENUM_STATE(Enum):
 #     READY="READY"
@@ -41,9 +42,12 @@ class CoDroneControl(tk.Frame):
         self.initialize_user_interface()
         self.updater = sched.scheduler(time.time, time.sleep)
         self.updater.enter(2, 1, self.updateLoop)
-        self.bluetooth = Bluetooth()
-        self.bluetooth.listAvailable()
-        self.arduino = Arduino()
+        # self.bluetooth = Bluetooth()
+        # self.bluetooth.listAvailable()
+        # self.arduino = Arduino()
+        self.camera = Camera()
+        if self.camera.isCameraConnected:
+          self.camera.readFrame()
         threading.Timer(1, self.updater.run).start()
 
     def updateLoop(self):
