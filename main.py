@@ -6,9 +6,11 @@ import tkinter as tk
 import sched
 import time
 import sys
+import serial
 from CoDrone import Mode, Color, Direction
 from sched import scheduler
 from src.Util.Bluetooth import Bluetooth
+from src.Util.Arduino import Arduino
 
 # class ENUM_STATE(Enum):
 #     READY="READY"
@@ -41,6 +43,7 @@ class CoDroneControl(tk.Frame):
         self.updater.enter(2, 1, self.updateLoop)
         self.bluetooth = Bluetooth()
         self.bluetooth.listAvailable()
+        self.arduino = Arduino()
         threading.Timer(1, self.updater.run).start()
 
     def updateLoop(self):
