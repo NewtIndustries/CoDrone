@@ -3,4 +3,5 @@ OpenCV-Python
 rtsp
 pylint
 pybluez
+pyserial
 # pybluez\[ble\]
