@@ -11,7 +11,7 @@ from CoDrone import Mode, Color, Direction
 from sched import scheduler
 from src.Util.Bluetooth import Bluetooth
 from src.Util.Arduino import Arduino
-from src.Util.Camera import Camera
+# from src.Util.Camera import Camera
 
 # class ENUM_STATE(Enum):
 #     READY="READY"
@@ -45,9 +45,9 @@ class CoDroneControl(tk.Frame):
         # self.bluetooth = Bluetooth()
         # self.bluetooth.listAvailable()
         # self.arduino = Arduino()
-        self.camera = Camera()
-        if self.camera.isCameraConnected:
-          self.camera.readFrame()
+        # self.camera = Camera()
+        # if self.camera.isCameraConnected:
+        #   self.camera.readFrame()
         threading.Timer(1, self.updater.run).start()
 
     def updateLoop(self):
@@ -184,7 +184,7 @@ class CoDroneControl(tk.Frame):
                 except Exception:
                     print("Error in get state")
 
-            if self.drone.isOpen() and (self.drone.get_state() == STATE_READY or self.drone.get_state() == STATE_FLIGHT):
+            if self.drone.isOpen() and self.drone.isConnected() and (self.drone.get_state() == STATE_READY or self.drone.get_state() == STATE_FLIGHT):
                 # print("Open and Ready")
                 self.appendState(
                     "Battery Level", self.drone.get_battery_percentage())
