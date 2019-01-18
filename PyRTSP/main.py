@@ -80,10 +80,10 @@ print(response)
 
 
 setup = (
-	'SETUP ' + rtspUrl + '/trackID=1 RTSP/1.0\r\n' +
+	'SETUP ' + rtspUrl + '/trackID=2 RTSP/1.0\r\n' +
 	'CSeq: 3\r\n' +
 	'User-Agent: python\r\n' +
-	'Transport: RTP/AVP;unicast;client_port=60784-60785\r\n\r\n'
+	'Transport: RTP/AVP;unicast;client_port=1234-1235\r\n\r\n'
 )
 
 print('Sending Setup')
@@ -112,14 +112,14 @@ pp.pprint(clientPorts)
 # pp.pprint('ServerPorts:' + dir(serverPorts))
 
 streamingSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-streamingSocket.bind(("127.0.0.1", 60784))
+streamingSocket.bind(("", 1234))
 streamingSocket.settimeout(15)
 
 play = (
 	"PLAY " + rtspUrl + " RTSP/1.0\r\n" +
 	"CSeq: 4\r\n" +
-	"Session: " + str(sessionId) + "\r\n" +
-	"Range: npt=0.000-\r\n\r\n"
+	"Range: npt=0.000-\r\n" +
+	"Session: " + str(sessionId) + "\r\n\r\n"
 )
 
 
@@ -131,8 +131,9 @@ print('Sent Play')
 response = s.recv(4096)
 print(response)
 
-data = streamingSocket.recv(1)
-print(data)
+for i in range(100):
+	data = streamingSocket.recv(1024)
+	print(data)
 # while True:
 # 	data, addr = streamingSocket.recvfrom(1024)
 # 	# data = streamingSocket.recv(4096)
