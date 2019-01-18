@@ -132,7 +132,7 @@ response = s.recv(4096)
 print(response)
 
 for i in range(100):
-	data = streamingSocket.recv(1024)
+	data = streamingSocket.recv(4096)
 	print(data)
 # while True:
 # 	data, addr = streamingSocket.recvfrom(1024)
